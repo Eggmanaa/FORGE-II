@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getLessonsByGrade } from "@/lib/lessons";
 import { Download } from "lucide-react";
+import { AudioPlayer } from "@/components/AudioPlayer";
 
 export default function Grade10Page() {
   const lessons = getLessonsByGrade(10);
@@ -76,32 +77,49 @@ export default function Grade10Page() {
                   </ul>
                 </div>
 
-                <div className="pt-4 border-t border-border">
+                <div className="pt-4 border-t border-border space-y-4">
                   <h3 className="font-semibold text-primary mb-3 text-lg">Course Materials</h3>
-                  <div className="flex flex-wrap gap-4">
-                    <a
-                      href={lesson.pptxFile}
-                      download
-                      className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                    >
-                      <Download className="w-5 h-5" />
-                      Download PowerPoint
-                    </a>
-                    {lesson.audioFile && (
+                  
+                  {/* Audio Player Section */}
+                  {lesson.audioFile && (
+                    <div>
+                      <h4 className="font-medium text-primary mb-2 text-sm">🎧 Listen to Audio Lesson</h4>
+                      <AudioPlayer
+                        audioUrl={lesson.audioFile}
+                        title={lesson.title}
+                        downloadable={true}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Download Links */}
+                  <div>
+                    <h4 className="font-medium text-primary mb-2 text-sm">📄 Download Materials</h4>
+                    <div className="flex flex-wrap gap-4">
                       <a
-                        href={lesson.audioFile}
+                        href={lesson.pptxFile}
                         download
-                        className="inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+                        className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
                       >
                         <Download className="w-5 h-5" />
-                        Download Audio
+                        Download PowerPoint
                       </a>
-                    )}
-                    {!lesson.audioFile && (
-                      <div className="inline-flex items-center gap-2 bg-muted text-muted-foreground px-6 py-3 rounded-lg font-medium">
-                        Audio Coming Soon
-                      </div>
-                    )}
+                      {lesson.audioFile && (
+                        <a
+                          href={lesson.audioFile}
+                          download
+                          className="inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+                        >
+                          <Download className="w-5 h-5" />
+                          Download Audio
+                        </a>
+                      )}
+                      {!lesson.audioFile && (
+                        <div className="inline-flex items-center gap-2 bg-muted text-muted-foreground px-6 py-3 rounded-lg font-medium">
+                          Audio Coming Soon
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
