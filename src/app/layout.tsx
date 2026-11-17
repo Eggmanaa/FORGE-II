@@ -1,23 +1,35 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lato, Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ClientBody from "./ClientBody";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const serif = Playfair_Display({
+  variable: "--font-serif",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sans = Lato({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
+const label = Montserrat({
+  variable: "--font-label",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "FORGE Curriculum - Forging Emotional Resilience and Relational Clarity",
-  description: "A Christ-Centered Social Emotional Learning & Leadership Formation Program for grades 9-12 at Bishop Diego High School",
+  title: "FORGE | Character & Virtue Formation at Bishop Diego",
+  description:
+    "FORGE is a Christ-centered character, virtue, and leadership formation curriculum for grades 9-12 at Bishop García Diego High School.",
+  icons: { icon: "/images/forge-emblem.png" },
 };
 
 export default function RootLayout({
@@ -26,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${label.variable}`}>
       <body suppressHydrationWarning className="antialiased">
         <ClientBody>
           <Navigation />

@@ -1,139 +1,138 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Brain, CalendarDays, Clock, Cross, GraduationCap, MessagesSquare, Users } from "lucide-react";
+
+export const metadata = { title: "About | FORGE" };
+
+const delivery = [
+  { icon: GraduationCap, label: "Who", value: "Every student, grades 9 to 12" },
+  { icon: CalendarDays, label: "How often", value: "Two sessions per grade, each year" },
+  { icon: Clock, label: "Length", value: "45 minutes, in Theology class" },
+  {
+    icon: MessagesSquare,
+    label: "Format",
+    value: "Small-group discussion, video, role-play, and embodied practices of self-mastery",
+  },
+];
+
+const standards = [
+  {
+    title: "The Virtue Tradition",
+    text: "Each session is anchored in one or more of the cardinal virtues (prudence, justice, fortitude, temperance), the theological virtues (faith, hope, charity), or the foundational habits of self-knowledge and humility.",
+  },
+  {
+    title: "NSBECS",
+    text: "Supports the National Standards and Benchmarks for Effective Catholic Schools by integrating Catholic Social Teaching and providing developmentally appropriate character formation.",
+  },
+  {
+    title: "WCEA & WASC Accreditation",
+    text: "Contributes to accreditation by delivering a standards-aligned character formation curriculum within core Theology classes, embedding Catholic identity, and cultivating a trauma-informed school culture.",
+  },
+];
+
+const foundations = [
+  {
+    icon: Cross,
+    title: "Catholic Anthropology & Virtue",
+    text: "The human person as created in God's image, called to grow in virtue and holiness. Drawn from Scripture, St. Thomas Aquinas, and the Catechism.",
+  },
+  {
+    icon: Brain,
+    title: "Affective Neuroscience",
+    text: "How the passions arise in the body and brain, and how reason and will can rightly order them.",
+  },
+  {
+    icon: Users,
+    title: "Attachment Theory",
+    text: "How our earliest relationships shape character, and how healthy relationships help form and heal it.",
+  },
+];
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto max-w-4xl">
-        <Link href="/" className="inline-block mb-8">
-          <Button variant="outline">← Back to Home</Button>
-        </Link>
-
-        <h1 className="text-5xl font-bold text-primary mb-8">About FORGE</h1>
-
-        <div className="space-y-8">
-          <section>
-            <h2 className="text-3xl font-semibold text-accent mb-4">Program Overview</h2>
-            <p className="text-lg text-foreground/80 leading-relaxed mb-4">
-              <strong>FORGE</strong> is a comprehensive Social Emotional Learning (SEL) and leadership formation 
-              curriculum delivered to all students in grades 9-12 at Bishop Diego High School. Developed and 
-              facilitated by the school's Personal Counselor/Dean of Students, FORGE integrates affective 
-              neuroscience, attachment theory, and Christian Theology to foster emotional resilience, 
-              relational intelligence, and Christ-centered leadership.
-            </p>
-          </section>
-
-          <section className="bg-card p-6 rounded-lg border border-border">
-            <h2 className="text-3xl font-semibold text-accent mb-4">Mission & Standards Alignment</h2>
-            <p className="text-foreground/80 mb-4">
-              Grounded in the Catholic vision of integral formation, FORGE is designed to form the whole 
-              person—mind, heart, and spirit. The curriculum directly supports key educational standards by 
-              embedding theological principles and promoting measurable growth in students' affective and 
-              interpersonal skills.
-            </p>
-            <div className="space-y-4 mt-6">
-              <div>
-                <h3 className="text-xl font-semibold text-primary mb-2">CASEL's Five Core Competencies</h3>
-                <p className="text-foreground/70">Each module supports development of:</p>
-                <ul className="list-disc list-inside space-y-1 text-foreground/80 ml-4 mt-2">
-                  <li>Self-Awareness</li>
-                  <li>Self-Management</li>
-                  <li>Social Awareness</li>
-                  <li>Relationship Skills</li>
-                  <li>Responsible Decision-Making</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-primary mb-2">National Standards & Benchmarks</h3>
-                <p className="text-foreground/80">
-                  Integrates Catholic Social Teaching and provides developmentally appropriate character formation.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-primary mb-2">WCEA & WASC Accreditation</h3>
-                <p className="text-foreground/80">
-                  Contributes to accreditation by delivering a standards-aligned SEL curriculum integrated into 
-                  core Theology classes, embedding Catholic identity, and cultivating a trauma-informed school environment.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-semibold text-accent mb-4">Delivery Model</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg border-2 border-primary/20 shadow-sm">
-                <h4 className="font-semibold text-primary mb-2">Target Audience</h4>
-                <p className="text-foreground/80">All students (Grades 9-12)</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-primary/20 shadow-sm">
-                <h4 className="font-semibold text-primary mb-2">Frequency</h4>
-                <p className="text-foreground/80">Two 45-minute modules per grade level each academic year</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-primary/20 shadow-sm">
-                <h4 className="font-semibold text-primary mb-2">Setting</h4>
-                <p className="text-foreground/80">Theology class periods</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-primary/20 shadow-sm">
-                <h4 className="font-semibold text-primary mb-2">Format</h4>
-                <p className="text-foreground/80">Interactive lessons featuring small-group discussion, video clips, role-playing, and somatic-based SEL practices</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-card p-6 rounded-lg border border-border">
-            <h2 className="text-3xl font-semibold text-accent mb-4">Theoretical Foundation</h2>
-            <p className="text-foreground/80 mb-4">FORGE is built upon three pillars of research and practice:</p>
-            <ul className="space-y-3">
-              <li className="flex items-start">
-                <span className="text-2xl mr-3">🧠</span>
-                <div>
-                  <h4 className="font-semibold text-primary">Affective Neuroscience</h4>
-                  <p className="text-foreground/70">Understanding how emotions function in the brain and influence behavior</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-3">🤝</span>
-                <div>
-                  <h4 className="font-semibold text-primary">Attachment Theory</h4>
-                  <p className="text-foreground/70">Exploring how relationships shape emotional development and resilience</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-3">✝️</span>
-                <div>
-                  <h4 className="font-semibold text-primary">Christian Theology</h4>
-                  <p className="text-foreground/70">Grounding SEL in Catholic Social Teaching and Gospel values</p>
-                </div>
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-semibold text-accent mb-4">Program Impact</h2>
-            <p className="text-lg text-foreground/80 leading-relaxed mb-4">
-              FORGE provides students with more than just emotional tools; it offers a theological and 
-              psychological framework for understanding themselves and their role in the world. By developing 
-              emotional literacy and self-regulation, the program enhances academic readiness and cultivates 
-              a more empathetic, trauma-informed school climate.
-            </p>
-            <div className="bg-primary/5 p-6 rounded-lg border-l-4 border-primary">
-              <h3 className="text-xl font-semibold text-primary mb-2">Ultimate Goal</h3>
-              <p className="text-foreground/80 italic">
-                FORGE prepares students to become servant-leaders and emotionally intelligent disciples who 
-                can live out the Gospel in a multicultural world.
-              </p>
-            </div>
-          </section>
-
-          <div className="pt-8 text-center">
-            <Link href="/grade-9">
-              <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
-                Explore the Curriculum
-              </Button>
-            </Link>
-          </div>
+    <div>
+      <header className="bg-primary text-white">
+        <div className="container mx-auto max-w-4xl py-16 md:py-24">
+          <p className="eyebrow text-white/75">About the Program</p>
+          <h1 className="mt-4 text-5xl font-bold md:text-6xl">About FORGE</h1>
+          <p className="mt-6 text-xl leading-relaxed text-white/85">
+            FORGE is a character, virtue, and leadership formation curriculum delivered to every student at Bishop
+            Diego. Developed and led by the school's Personal Counselor and Dean of Students, it unites the Catholic
+            virtue tradition with insights from neuroscience and attachment research to form Christ-centered leaders.
+          </p>
         </div>
+      </header>
+
+      <div className="container mx-auto max-w-4xl space-y-20 py-16 md:py-24">
+        <section>
+          <p className="eyebrow text-primary">Mission</p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">Forming the whole person</h2>
+          <p className="mt-5 text-lg leading-relaxed text-foreground/80">
+            Grounded in the Catholic vision of integral formation, FORGE is designed to form the whole person, mind,
+            heart, and spirit. Students learn to know themselves truthfully, order their passions toward the good,
+            love others with charity and justice, and lead with courage.
+          </p>
+        </section>
+
+        <section>
+          <p className="eyebrow text-primary">Delivery Model</p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">How FORGE reaches every student</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {delivery.map((d) => (
+              <div key={d.label} className="flex gap-4 rounded-2xl border border-border p-5">
+                <d.icon className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
+                <div>
+                  <p className="eyebrow text-[10px] text-muted-foreground">{d.label}</p>
+                  <p className="mt-1 font-semibold leading-snug">{d.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <p className="eyebrow text-primary">Foundations</p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">Three pillars</h2>
+          <div className="mt-8 space-y-4">
+            {foundations.map((f) => (
+              <div key={f.title} className="flex gap-5 rounded-2xl bg-muted/60 p-6">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+                  <f.icon className="h-6 w-6" />
+                </span>
+                <div>
+                  <h3 className="text-xl font-bold">{f.title}</h3>
+                  <p className="mt-1 leading-relaxed text-foreground/75">{f.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <p className="eyebrow text-primary">Standards Alignment</p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">Rooted in Catholic education standards</h2>
+          <div className="mt-8 divide-y divide-border border-y border-border">
+            {standards.map((s) => (
+              <div key={s.title} className="grid gap-2 py-6 md:grid-cols-[220px_1fr] md:gap-8">
+                <h3 className="text-xl font-bold text-primary">{s.title}</h3>
+                <p className="leading-relaxed text-foreground/80">{s.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-3xl bg-primary p-8 text-white md:p-12">
+          <p className="eyebrow text-white/75">The Goal</p>
+          <p className="mt-4 font-serif text-2xl italic leading-snug md:text-3xl">
+            FORGE prepares students to become servant-leaders and virtuous disciples who live out the Gospel in a
+            diverse world.
+          </p>
+          <Link
+            href="/grade-9"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-label text-sm font-bold text-primary transition-transform hover:-translate-y-0.5"
+          >
+            Explore the Curriculum <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
       </div>
     </div>
   );

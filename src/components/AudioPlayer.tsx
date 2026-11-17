@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Download, Volume2, VolumeX, SkipBack, SkipForward } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import { Download, Pause, Play, RotateCcw, RotateCw, Volume2, VolumeX } from "lucide-react";
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -10,138 +9,92 @@ interface AudioPlayerProps {
   downloadable?: boolean;
 }
 
+const formatTime = (time: number) => {
+  if (!Number.isFinite(time)) return "0:00";
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
 export function AudioPlayer({ audioUrl, title, downloadable = true }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    const handleLoadedData = () => {
-      setDuration(audio.duration);
-      setIsLoading(false);
-    };
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-    };
-
-    const handleError = () => {
-      setError('Failed to load audio file');
-      setIsLoading(false);
-    };
-
-    const handleCanPlay = () => {
-      setIsLoading(false);
-    };
-
-    audio.addEventListener('loadeddata', handleLoadedData);
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('canplay', handleCanPlay);
-
+    const onMeta = () => setDuration(audio.duration);
+    const onTime = () => setCurrentTime(audio.currentTime);
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onError = () => setError("This recording could not be loaded.");
+    audio.addEventListener("loadedmetadata", onMeta);
+    audio.addEventListener("durationchange", onMeta);
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("ended", onPause);
+    audio.addEventListener("error", onError);
     return () => {
-      audio.removeEventListener('loadeddata', handleLoadedData);
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener("loadedmetadata", onMeta);
+      audio.removeEventListener("durationchange", onMeta);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("ended", onPause);
+      audio.removeEventListener("error", onError);
     };
   }, [audioUrl]);
 
-  const togglePlayPause = () => {
+  const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
+    if (audio.paused) {
+      // Pause any other FORGE players on the page
+      for (const el of document.querySelectorAll("audio")) if (el !== audio) el.pause();
+      audio.play().catch(() => setError("Playback was blocked. Try again or download the file."));
     } else {
-      audio.play().catch(() => {
-        setError('Failed to play audio');
-      });
+      audio.pause();
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const audio = audioRef.current;
-    const progressBar = progressRef.current;
-    if (!audio || !progressBar) return;
-
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const newTime = (clickX / rect.width) * duration;
-    
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
+  const seek = (value: number) => {
     const audio = audioRef.current;
     if (!audio) return;
+    audio.currentTime = value;
+    setCurrentTime(value);
+  };
 
-    audio.volume = newVolume;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
+  const skip = (seconds: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    seek(Math.max(0, Math.min(duration || 0, audio.currentTime + seconds)));
   };
 
   const toggleMute = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    if (isMuted) {
-      audio.volume = volume;
-      setIsMuted(false);
-    } else {
-      audio.volume = 0;
-      setIsMuted(true);
-    }
+    audio.muted = !audio.muted;
+    setIsMuted(audio.muted);
   };
 
-  const skipTime = (seconds: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const newTime = Math.max(0, Math.min(duration, audio.currentTime + seconds));
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   if (error) {
     return (
-      <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-        <p className="text-red-700 text-sm font-medium">Audio Error: {error}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-sm text-foreground/80">{error}</p>
         {downloadable && (
           <a
             href={audioUrl}
             download
-            className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors mt-2"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-label text-sm font-semibold text-white hover:bg-primary/90"
           >
-            <Download className="w-4 h-4" />
-            Download Audio Instead
+            <Download className="h-4 w-4" /> Download audio
           </a>
         )}
       </div>
@@ -149,147 +102,96 @@ export function AudioPlayer({ audioUrl, title, downloadable = true }: AudioPlaye
   }
 
   return (
-    <div className="bg-white border-2 border-primary/20 rounded-lg p-4 shadow-sm">
-      <audio
-        ref={audioRef}
-        src={audioUrl}
-        preload="metadata"
-        onLoadStart={() => setIsLoading(true)}
-      />
-      
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-primary text-sm truncate flex-1 pr-4">
-            🎵 {title}
-          </h4>
-          {downloadable && (
-            <a
-              href={audioUrl}
-              download
-              className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm"
-              title="Download Audio"
-            >
-              <Download className="w-4 h-4" />
-            </a>
-          )}
-        </div>
+    <div className="rounded-xl border border-border bg-muted/60 p-4">
+      {/* biome-ignore lint/a11y/useMediaCaption: lecture audio, no captions available */}
+      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      <div className="flex items-center gap-3 sm:gap-4">
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={isPlaying ? `Pause ${title}` : `Play ${title}`}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
+        </button>
 
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div
-            ref={progressRef}
-            className="h-2 bg-gray-200 rounded-full cursor-pointer relative overflow-hidden"
-            onClick={handleProgressClick}
-          >
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-150"
-              style={{ width: `${progressPercentage}%` }}
-            />
-            {isLoading && (
-              <div className="absolute inset-0 bg-gray-300 animate-pulse rounded-full" />
-            )}
-          </div>
-          
-          <div className="flex justify-between text-xs text-gray-500">
+        <div className="min-w-0 flex-1">
+          <input
+            type="range"
+            min={0}
+            max={duration || 0}
+            step={1}
+            value={currentTime}
+            onChange={(e) => seek(Number(e.target.value))}
+            aria-label="Seek"
+            className="forge-range w-full"
+            style={{ ["--pct" as string]: `${pct}%` }}
+          />
+          <div className="mt-1 flex justify-between font-label text-[11px] font-medium tabular-nums text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
-            <span>{isLoading ? 'Loading...' : formatTime(duration)}</span>
+            <span>{duration ? formatTime(duration) : "--:--"}</span>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {/* Skip Back */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => skipTime(-10)}
-              disabled={isLoading}
-              className="h-8 w-8 p-0"
-              title="Skip back 10 seconds"
-            >
-              <SkipBack className="w-3 h-3" />
-            </Button>
-
-            {/* Play/Pause */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={togglePlayPause}
-              disabled={isLoading}
-              className="h-10 w-10 p-0 border-2 border-primary hover:bg-primary hover:text-white"
-              title={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4 ml-0.5" />
-              )}
-            </Button>
-
-            {/* Skip Forward */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => skipTime(10)}
-              disabled={isLoading}
-              className="h-8 w-8 p-0"
-              title="Skip forward 10 seconds"
-            >
-              <SkipForward className="w-3 h-3" />
-            </Button>
-          </div>
-
-          {/* Volume Control */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleMute}
-              className="h-8 w-8 p-0"
-              title={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? (
-                <VolumeX className="w-4 h-4" />
-              ) : (
-                <Volume2 className="w-4 h-4" />
-              )}
-            </Button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={isMuted ? 0 : volume}
-              onChange={handleVolumeChange}
-              className="w-16 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              title="Volume"
-            />
-          </div>
+        <div className="hidden items-center gap-1 sm:flex">
+          <IconBtn label="Back 15 seconds" onClick={() => skip(-15)}>
+            <RotateCcw className="h-4 w-4" />
+          </IconBtn>
+          <IconBtn label="Forward 15 seconds" onClick={() => skip(15)}>
+            <RotateCw className="h-4 w-4" />
+          </IconBtn>
+          <IconBtn label={isMuted ? "Unmute" : "Mute"} onClick={toggleMute}>
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </IconBtn>
         </div>
       </div>
 
       <style jsx>{`
-        .slider::-webkit-slider-thumb {
+        .forge-range {
+          -webkit-appearance: none;
           appearance: none;
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: hsl(var(--primary));
+          height: 6px;
+          border-radius: 9999px;
+          background: linear-gradient(
+            to right,
+            hsl(var(--primary)) 0%,
+            hsl(var(--primary)) var(--pct),
+            #dddddd var(--pct),
+            #dddddd 100%
+          );
           cursor: pointer;
         }
-        .slider::-moz-range-thumb {
-          width: 12px;
-          height: 12px;
+        .forge-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 14px;
+          height: 14px;
           border-radius: 50%;
           background: hsl(var(--primary));
-          cursor: pointer;
-          border: none;
+          border: 2px solid white;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .forge-range::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: hsl(var(--primary));
+          border: 2px solid white;
         }
       `}</style>
     </div>
+  );
+}
+
+function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-white hover:text-primary"
+    >
+      {children}
+    </button>
   );
 }
